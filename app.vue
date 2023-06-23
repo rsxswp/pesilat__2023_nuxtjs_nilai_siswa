@@ -19,6 +19,7 @@
 
 
       <FormSiswa :dataForm="dataForm" @submit="submitNilai" />
+      <p>Nilai Rata Rata Siswa : {{ this?.average }}</p>
 
       <CardSiswa v-for="(task, key) in dataSiswa" :key="key" :keyC="key" :data="task" @delete="deleteData" />
 
@@ -29,8 +30,6 @@
         </svg>
         <span>Belum ada nilai</span>
       </div>
-
-      <p>Nilai Rata Rata Siswa : {{ this?.average }}</p>
 
       <button class="btn btn-outline btn-warning" @click="handleAverage" type="reset">AVERAGE</button>
 
@@ -59,7 +58,6 @@ export default {
         nama: 'Reza Khoirul Wijaya Putra',
         nilai: 10
       }],
-      nilaiSiswa: null // mengumpulkan semua nilai menjadi array
     };
   },
 
@@ -68,18 +66,10 @@ export default {
     FormSiswa
   },
 
-  computed: {
-    siswaChange() {
-
-      console.log('nilai berubah')
-      return this.dataForm.nama;
-      this.nilaiSiswa = this.dataSiswa.map(s => s.nilai);
-    }
-  },
-
   methods: {
     deleteData(id) {
       this.dataSiswa.splice(id, 1);
+      this.refreshAverage();
     },
     submitNilai(e) {
       // validasi
@@ -93,6 +83,16 @@ export default {
       for (const key in this.dataForm) {
         this.dataForm[key] = null
       }
+
+      this.refreshAverage()
+    },
+
+    totalNilaiSiswa() {
+      return this.dataSiswa.map(n => n.nilai)
+    },
+
+    refreshAverage() {
+      this.average = this.averageF(this.totalNilaiSiswa())
     },
 
     averageF(nilaiSiswa = []) {
@@ -105,20 +105,15 @@ export default {
       return Math.round(totalNilai / nilaiSiswa.length)
     },
 
-    // munculkanAverage() {
-    // },
-
     handleAverage() {
-      // const nilai = this.dataSiswa.map(s => s.nilai); // mengumpulkan semua nilai menjadi array
-      const result = this.averageF(this.nilaiSiswa);
+      const result = this.averageF(this.totalNilaiSiswa());
       this.average = result;
       return alert("Nilai rata-rata siswa : " + result)
     }
   },
+
   mounted() {
-    this.nilaiSiswa = this.dataSiswa.map(s => s.nilai)
-    this.average = this.averageF(this.nilaiSiswa)
-    // console.log(this.dataForm.nis)
+    this.average = this.averageF(this.totalNilaiSiswa())
   },
 };
 </script>
